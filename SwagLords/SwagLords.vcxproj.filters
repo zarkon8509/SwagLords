@@ -27,6 +27,9 @@
     <ClCompile Include="bullet.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="enemy.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h">
@@ -36,6 +39,9 @@
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="bullet.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>
