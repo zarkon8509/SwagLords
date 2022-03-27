@@ -121,20 +121,6 @@ Game::~Game()
 	}
 }
 
-
-void Game::run()
-{
-	while (!this->isEndGame()&&this->window->isOpen())
-	{
-		this->pollEvents();
-
-		if(this->player->getHp()>0)
-			this->update();
-
-		this->render();
-	}
-}
-
 void Game::pollEvents()
 {
 	while (this->window->pollEvent(this->event))
@@ -150,9 +136,22 @@ void Game::pollEvents()
 			break;
 		}
 	}
-
-	
 }
+
+
+void Game::run()
+{
+	while (!this->isEndGame()&&this->window->isOpen())
+	{
+		this->pollEvents();
+
+		if(this->player->getHp()>0)
+			this->update();
+
+		this->render();
+	}
+}
+
 
 bool Game::isEndGame()
 {
@@ -163,15 +162,14 @@ bool Game::isEndGame()
 
 void Game::update()
 {
-	
-	this->updateInput();
+	this->updateWorld();
 	this->updateGui();
+	this->updateInput();
 	this->player->update();
 	this->updateCollision();
 	this->updateBullet();	
 	this->updateEnemies();
 	this->updateCombat();
-	this->updateWorld();
 }
 
 void Game::updateInput()
@@ -237,7 +235,7 @@ void Game::updateCollision()
 	//Top
 	if (this->player->getBounds().top < 0.f)
 	{
-		this->player->setPosition(this->player->getBounds().height, 0.f);
+		this->player->setPosition(this->player->getPos().x, 0.f);
 	}
 	
 	//Bottom
@@ -291,26 +289,26 @@ void Game::updateEnemies()
 		//Bullett culling (top screen), remove if exit from top screen
 		if ((enemy->getBounds().top > this->window->getSize().y)&&!enemy_deleted)
 		{
-			//Delete pointer to the single bullett out of screen
-			delete this->enemies.at(counter);
-			//Actually bullett delete
+			
+			//Actually enemy delete
 			this->enemies.erase(this->enemies.begin() + counter);
-			//Bullett's vector decrease by one
+			//Enemy's vector decrease by one
 			--counter;
 			enemy_deleted = true;
+			//Delete pointer to the single enemy out of screen
+			//delete this->enemies.at(counter);
 			//this->player
 			std::cout << this->enemies.size() << " \n";
 		}
-		if (this->enemies.at(counter)->getBounds().intersects(this->player->getBounds()) && !enemy_deleted)
+		if (enemy->getBounds().intersects(this->player->getBounds()))
 		{
 			//Lose HP
-			this->player->loseHp(this->enemies.at(counter)->getDamage());
+			this->player->loseHp(enemy->getDamage());
 			//Delete pointer to the single bullett out of screen
-			delete this->enemies.at(counter);
+			delete enemy;
 			//Actually bullett delete
 			this->enemies.erase(this->enemies.begin() + counter);
 			//Bullett's vector decrease by one
-			--counter;
 			//this->player
 			enemy_deleted = true;
 			std::cout << this->enemies.size() << " \n";
@@ -328,11 +326,8 @@ void Game::updateCombat()
 		bool enemy_deleted = false;
 		for (size_t k = 0; k < this->bullets.size() && enemy_deleted == false; k++)
 		{
-			if (this->enemies[i]->getBounds().intersects(this->bullets[k]->getBounds()))
+			if (this->enemies[i]->getBounds().intersects(this->bullets[k]->getBounds()) && !enemy_deleted)
 			{
-				//Get damage
-				this->player->loseHp(this->enemies[i]->getDamage());
-
 				this->points += this->enemies[i]->getPoints();
 
 				delete this->enemies[i];
@@ -342,8 +337,10 @@ void Game::updateCombat()
 				this->bullets.erase(this->bullets.begin() + k);
 
 				enemy_deleted = true;
+				
 
 			}
+		
 		}
 	}
 }

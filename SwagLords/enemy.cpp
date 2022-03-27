@@ -45,8 +45,8 @@ void Enemy::initTexture()
 {
 	this->shape.setTexture(this->shapeTexture);
 
-	this->shape.setScale(sf::Vector2f(1.f, 
-									  1.f));
+	this->shape.setScale(sf::Vector2f(this->pointCount*0.1f, 
+									  this->pointCount*0.1f));
 }
 
 const sf::FloatRect Enemy::getBounds() const
